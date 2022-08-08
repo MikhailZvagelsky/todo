@@ -1,0 +1,11 @@
+jib {
+    container.creationTime = 'USE_CURRENT_TIMESTAMP'
+    from {
+        image = 'bellsoft/liberica-openjdk-alpine-musl:18.0.2'
+    }
+    to {
+        tags = ['latest']
+        image = 'registry.hub.docker.com/mikhailzvagelsky/devopswithkubernetes_todo'
+        credHelper = 'osxkeychain'
+    }
+}
