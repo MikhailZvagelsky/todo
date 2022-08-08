@@ -1,3 +1,6 @@
 server:
 #  port: ${PORT}
   port: 8091
+image:
+  file: /Users/mikhail.zvagelsky/kubernetes/devopswithkubernetes/todo/src/main/resources/images/daily_image.jpg
+  url: https://picsum.photos/500

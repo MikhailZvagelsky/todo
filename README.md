@@ -1,40 +1,26 @@
-
-### Run in Docker
-
-```shell
-docker container run --name notifier -e "PORT=8091" -p 8091:8091 mikhailzvagelsky/devopswithkubernetes_todo
-```
-
 ### Run in k8s
 
 Run k8s cluster, forwarding host's ports to ports of agent and load-balancer.
 
 ```shell
-k3d cluster create --port 8082:30080@agent:0 -p 8081:80@loadbalancer --agents 2
+k3d cluster create -p 8081:80@loadbalancer --agents 2
 ```
 
+For the PersistentVolume to work we need to create the local path in the node we are binding it to.
+Since our k3d cluster runs via docker let's create a directory at
+`/tmp/kube`
+in the `k3d-k3s-default-agent-0` container:
+
 ```shell
-kubectl apply -f manifests/deployment.yml
+docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/kube
+````
+
+Deploy persistent volume and persistent volume claim fro the folder
+`/Users/mikhail.zvagelsky/kubernetes/devopswithkubernetes/exersize_1-11/manifests/`
+And deploy the app:
+
+```shell
+kubectl apply -f manifests/
 ```
 
-#### Option 1.
-Use ports-forwarding:
-```shell
-kubectl port-forward todo-app-deployment-xxx 8082:8091
-```
-App is available `http://localhost:8082/`
-
-#### Option 2.
-Use NodePort service:
-```shell
-kubectl apply -f manifests/node-port-service.yml
-```
-App is available `http://localhost:8082/`
-
-#### Option 4.
-Use Ingress.
-```shell
-kubectl apply -f manifests/cluster-ip-service.yml
-kubectl apply -f manifests/ingress.yml
-```
-App is available on port 80: `http://localhost:8081/`
+App is available on port 8081: `http://localhost:8081/`.

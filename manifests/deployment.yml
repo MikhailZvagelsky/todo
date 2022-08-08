@@ -12,6 +12,16 @@ spec:
       labels:
         app: todo-app
     spec:
+      volumes:
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: persistent-volume-claim # /Users/mikhail.zvagelsky/kubernetes/devopswithkubernetes/exersize_1-11/manifests/persistent-volume-claim.yml
       containers:
         - name: todo-app
           image: mikhailzvagelsky/devopswithkubernetes_todo
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
+          volumeMounts:
+            - name: shared-volume
+              mountPath: /home

@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "image.file",
+      "type": "java.lang.String",
+      "description": "Path to daily image file."
+    },
+    {
+      "name": "image.url",
+      "type": "java.lang.String",
+      "description": "URL used to download a daily image from."
+    }
+  ] }
