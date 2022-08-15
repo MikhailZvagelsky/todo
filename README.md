@@ -15,7 +15,7 @@ in the `k3d-k3s-default-agent-0` container:
 docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/kube
 ````
 
-Deploy persistent volume and persistent volume claim fro the folder
+Deploy persistent volume and persistent volume claim from the folder
 `/Users/mikhail.zvagelsky/kubernetes/devopswithkubernetes/exersize_1-11/manifests/`
 And deploy the app:
 

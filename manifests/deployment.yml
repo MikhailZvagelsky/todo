@@ -15,10 +15,10 @@ spec:
       volumes:
         - name: shared-volume
           persistentVolumeClaim:
-            claimName: persistent-volume-claim # /Users/mikhail.zvagelsky/kubernetes/devopswithkubernetes/exersize_1-11/manifests/persistent-volume-claim.yml
+            claimName: persistent-volume-claim
       containers:
         - name: todo-app
-          image: mikhailzvagelsky/devopswithkubernetes_todo
+          image: mikhailzvagelsky/devopswithkubernetes_todo:1.13
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: docker
