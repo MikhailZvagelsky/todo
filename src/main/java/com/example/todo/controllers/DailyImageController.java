@@ -22,9 +22,6 @@ public class DailyImageController {
             produces = MediaType.IMAGE_JPEG_VALUE
     )
     public @ResponseBody byte[] getDailyImage() throws IOException {
-//        InputStream in = getClass()
-//                .getResourceAsStream("/images/ezh-s-muhomorom.jpg");
-//        return IOUtils.toByteArray(in);
         InputStream imageStream = imageService.getDailyImage();
         return IOUtils.toByteArray(imageStream);
     }

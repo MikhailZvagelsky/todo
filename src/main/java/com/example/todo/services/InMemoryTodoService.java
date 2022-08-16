@@ -12,6 +12,12 @@ public class InMemoryTodoService implements TodoService {
 
     private final Queue<Todo> todoList = new ConcurrentLinkedQueue<>();
 
+    public InMemoryTodoService() {
+        todoList.add(new Todo("TODO 1"));
+        todoList.add(new Todo("TODO 2"));
+        todoList.add(new Todo("TODO 3"));
+    }
+
     @Override
     public TodoList getTodos() {
         return new TodoList(todoList);
