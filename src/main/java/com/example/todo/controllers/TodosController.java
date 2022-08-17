@@ -27,8 +27,8 @@ public class TodosController {
     }
 
     @PostMapping
-    public void addTodo(@RequestParam("text") String newTodoText) {
-        todoService.saveTodo(newTodoText);
+    public void addTodo(@RequestBody Todo todo) {
+        todoService.saveTodo(todo.text());
     }
 
 }
