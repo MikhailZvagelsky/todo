@@ -11,11 +11,12 @@ class TodoComponent extends React.Component {
         this.submitNewTodo = this.submitNewTodo.bind(this);
         this.fetchTodoList = this.fetchTodoList.bind(this);
         this.fetchTodoList();
+        this.backendUrl = process.env.REACT_APP_BACKEND_URL;
     }
 
     fetchTodoList() {
         axios
-            .get("http://localhost:8091/todos")
+            .get(this.backendUrl)
             .then(res => {
                 console.log("Fetched todo:");
                 console.log(res.data);
@@ -28,7 +29,7 @@ class TodoComponent extends React.Component {
 
     submitNewTodo(newTodo) {
         axios
-            .post("http://localhost:8091/todos", {text: newTodo})
+            .post(this.backendUrl, {text: newTodo})
             .then(() => {
                 this.fetchTodoList();
                 console.log(`Todo "${newTodo}" posted.`);
