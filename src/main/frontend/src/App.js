@@ -1,67 +1,79 @@
-import React, {useState, useEffect} from "react";
-import logo from './logo.svg';
+import React from "react";
 import './App.css';
 import axios from "axios"
 
-const Todos = () => {
+class TodoComponent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            todoList: []
+        }
+        this.submitNewTodo = this.submitNewTodo.bind(this);
+        this.fetchTodoList = this.fetchTodoList.bind(this);
+        this.fetchTodoList();
+    }
 
-    const [todoList, setTodoList] = useState([]);
-
-    const fetchTodos = () => {
+    fetchTodoList() {
         axios
             .get("http://localhost:8091/todos")
             .then(res => {
-                console.log(todoList);
-                setTodoList(res.data);
+                console.log("Fetched todo:");
+                console.log(res.data);
+                this.setState({todoList: res.data});
+            })
+            .catch(err => {
+                console.log(`Fetching todo list error: ${err}`);
             });
     };
 
-    useEffect(() => {
-        fetchTodos();
-    }, []);
+    submitNewTodo(newTodo) {
+        axios
+            .post("http://localhost:8091/todos", {text: newTodo})
+            .then(() => {
+                this.fetchTodoList();
+                console.log(`Todo "${newTodo}" posted.`);
+            })
+            .catch(err => {
+                console.log(`Post new todo error: ${err}`);
+            });
+    }
 
-    return todoList.map( (todo, index) => {
-            return (
-                <div>
-                    <br/>{index}: {todo}
-                </div>
-            )
-        }
-    );
-};
+    render() {
+        return (
+            <div>
+                <AddTodoForm onNewTodoSubmit={this.submitNewTodo} />
+                <TodoList todoList={this.state.todoList} />
+            </div>
+        );
+    }
+}
 
-class TodoForm extends React.Component {
+class AddTodoForm extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {text: ''};
-
+        this.state = {
+            newTodo: ""
+        }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleChange(event) {
-        this.setState({text: event.target.value});
+        this.setState({newTodo: event.target.value});
     }
 
     handleSubmit(event) {
-        event.preventDefault()
-        axios
-            .post("http://localhost:8091/todos", this.state)
-            .then(() => {
-
-                console.log(`Todo "${this.state.text}" posted.`);
-            }).catch(err => {
-                console.log(err);
-        });
-
+        event.preventDefault();
+        this.props.onNewTodoSubmit(this.state.newTodo);
+        this.state.newTodo = "";
     }
 
     render() {
         return (
-            <form onSubmit={this.handleSubmit}>
+            <form id="add-todo-form" onSubmit={this.handleSubmit}>
                 <label>
                     Todo:
-                    <input type="text" value={this.state.text} onChange={this.handleChange} />
+                    <input type="text" placeholder="Todo..." value={this.state.newTodo} onChange={this.handleChange}/>
                 </label>
                 <input type="submit" value="Create Todo" />
             </form>
@@ -69,30 +81,28 @@ class TodoForm extends React.Component {
     }
 }
 
+class TodoList extends React.Component {
+    render() {
+        const rows = [];
+        this.props.todoList.forEach( (todo) => {
+            rows.push(
+                <div>{todo}</div>
+            );
+        });
+        return (
+            <div id = "todo-container">
+                <h1>Todo List:</h1>
+                <div>{rows}</div>
+            </div>
+        );
+    }
+}
+
 function App() {
     return (
         <div className="App">
-            <img src="http://localhost:8091/daily_image" alt="Daily Image" width="500" height="500" />
-
-            {/*<header className="App-header">*/}
-            {/*    <img src={logo} className="App-logo" alt="logo" />*/}
-            {/*    <p>*/}
-            {/*        Edit <code>src/App.js</code> and save to reload.*/}
-            {/*    </p>*/}
-            {/*    <a*/}
-            {/*        className="App-link"*/}
-            {/*        href="https://reactjs.org"*/}
-            {/*        target="_blank"*/}
-            {/*        rel="noopener noreferrer"*/}
-            {/*    >*/}
-            {/*        Learn React Misha!*/}
-            {/*    </a>*/}
-            {/*</header>*/}
-
-            <TodoForm />
-
-            <h1>Todo List:</h1>
-            <Todos />
+            <img src="http://localhost:8091/daily_image" alt="Daily Image" width="400" height="400" />
+            <TodoComponent />
         </div>
     );
 }

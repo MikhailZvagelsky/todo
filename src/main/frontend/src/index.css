@@ -11,3 +11,17 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#add-todo-form {
+  padding: 40px;
+}
+
+#todo-container {
+  background-color: antiquewhite;
+  text-align: left;
+  padding-left: 40px;
+}
+
+img {
+  padding-top: 40px;
+}
