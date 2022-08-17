@@ -10,14 +10,16 @@ class TodoComponent extends React.Component {
         }
         this.submitNewTodo = this.submitNewTodo.bind(this);
         this.fetchTodoList = this.fetchTodoList.bind(this);
-        this.fetchTodoList();
-        this.backendUrl = process.env.REACT_APP_BACKEND_URL;
+        this.backendUrl = process.env.NODE_ENV === 'production'
+            ? process.env.REACT_APP_PRODUCTION_BACKEND_URL
+            : process.env.REACT_APP_DEV_BACKEND_URL;
     }
 
     fetchTodoList() {
         axios
             .get(this.backendUrl)
             .then(res => {
+                console.log("Backend URL: " + this.backendUrl);
                 console.log("Fetched todo:");
                 console.log(res.data);
                 this.setState({todoList: res.data});
@@ -40,6 +42,7 @@ class TodoComponent extends React.Component {
     }
 
     render() {
+        this.fetchTodoList();
         return (
             <div>
                 <AddTodoForm onNewTodoSubmit={this.submitNewTodo} />

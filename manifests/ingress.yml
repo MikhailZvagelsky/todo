@@ -10,6 +10,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: todo-cluster-ip-service
+                name: todo-service
                 port:
                   number: 2345

@@ -1,3 +1,16 @@
+# Build and run Docker image
+
+```shell
+# Build the Docker image for the current folder and tag it
+docker image build . -t todo-app-react:2.02
+
+# Check the image was created
+docker images | grep todo-app-react:2.02
+
+# Run the image in detached mode
+docker container run --name tado-app-react-frontend --rm -p 3000:3000 -d todo-app-react:2.02
+```
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
