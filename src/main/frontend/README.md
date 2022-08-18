@@ -5,7 +5,13 @@
 docker image build . -t todo-app-react:2.02
 
 # Check the image was created
-docker images | grep todo-app-react:2.02
+docker image ls | grep todo-app-react
+
+# Tag an image and put it into repository. 
+# Increment image tag (vXXX) if an image with given tag already exists. That allows kubernetes to pull new image instead of using cached one.
+# And change image tag used in deployment accordingly.
+docker image tag todo-app-react:2.02 mikhailzvagelsky/todo-app-react:2.02.vXXX
+docker image push mikhailzvagelsky/todo-app-react:2.02.vXXX
 
 # Run the image in detached mode
 docker container run --name tado-app-react-frontend --rm -p 3000:3000 -d todo-app-react:2.02

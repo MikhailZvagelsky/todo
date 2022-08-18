@@ -10,9 +10,7 @@ class TodoComponent extends React.Component {
         }
         this.submitNewTodo = this.submitNewTodo.bind(this);
         this.fetchTodoList = this.fetchTodoList.bind(this);
-        this.backendUrl = process.env.NODE_ENV === 'production'
-            ? process.env.REACT_APP_PRODUCTION_BACKEND_URL
-            : process.env.REACT_APP_DEV_BACKEND_URL;
+        this.backendUrl = getBackendUrl() + "/todos";
     }
 
     fetchTodoList() {
@@ -102,10 +100,17 @@ class TodoList extends React.Component {
     }
 }
 
+function getBackendUrl() {
+    return process.env.NODE_ENV === 'production'
+        ? process.env.REACT_APP_PRODUCTION_BACKEND_URL
+        : process.env.REACT_APP_DEV_BACKEND_URL;
+}
+
 function App() {
+    const url = getBackendUrl() + "/daily_image";
     return (
         <div className="App">
-            <img src="http://localhost:8091/daily_image" alt="Daily Image" width="400" height="400" />
+            <img src={url} alt="Daily Image" width="400" height="400" />
             <TodoComponent />
         </div>
     );

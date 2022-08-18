@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app-back-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app-back
+  template:
+    metadata:
+      labels:
+        app: todo-app-back
+    spec:
+      volumes:
+        - name: shared-volume
+          persistentVolumeClaim:
+            claimName: persistent-volume-claim
+      containers:
+        - name: todo-app-back
+          image: mikhailzvagelsky/devopswithkubernetes_todo:2.02
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
+          volumeMounts:
+            - name: shared-volume
+              mountPath: /home
+          ports:
+            - containerPort: 8091
+              name: app-port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-back-service
+spec:
+  type: ClusterIP
+  selector:
+    app: todo-app-back
+  ports:
+    - name: back-svc-port
+      port: 8091          # The service is listening on this port.
+      protocol: TCP
+      targetPort: app-port
