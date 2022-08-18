@@ -28,3 +28,4 @@ kubectl apply -f manifests/
 ```
 
 App is available on port 8081: http://localhost:8081/
+You also can send requests to the backend directly http://localhost:8081/todos , http://localhost:8081/daily_image 
