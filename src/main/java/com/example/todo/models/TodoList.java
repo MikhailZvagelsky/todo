@@ -1,6 +1,6 @@
 package com.example.todo.models;
 
-import java.util.Queue;
+import java.util.List;
 
-public record TodoList(Queue<Todo> todos) {
+public record TodoList(List<Todo> todos) {
 }

@@ -1,13 +1,11 @@
 package com.example.todo.controllers;
 
 import com.example.todo.models.Todo;
-import com.example.todo.models.TodoList;
 import com.example.todo.services.TodoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Queue;
 import java.util.stream.Collectors;
 
 @RestController
@@ -21,9 +19,12 @@ public class TodosController {
 
     @GetMapping
     public List<String> getTodosText() {
-        TodoList todoList = todoService.getTodos();
-        Queue<Todo> todos = todoList.todos();
-        return todos.stream().map(Todo::text).collect(Collectors.toList());
+        return todoService
+                .getTodos()
+                .todos()
+                .stream()
+                .map(Todo::text)
+                .collect(Collectors.toList());
     }
 
     @PostMapping

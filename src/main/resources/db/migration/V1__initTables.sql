@@ -1,5 +1,5 @@
 CREATE TABLE todos (
                        id SERIAL,
-                       timestamp TIMESTAMPTZ NOT NULL,
+                       millis BIGINT NOT NULL,
                        text TEXT NOT NULL
 );

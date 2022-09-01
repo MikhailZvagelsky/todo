@@ -5,7 +5,7 @@ image:
   url: https://picsum.photos/500
 postgres:
   credentials:
-    folder: ${POSTGRES_CREDENTIALS_FOLDER}
+    folder: secrets
     passwordFile: password
     usernameFile: username
     urlFile: url
