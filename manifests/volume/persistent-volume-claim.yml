@@ -1,6 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  namespace: devops
   name: persistent-volume-claim
 spec:
   storageClassName: manual

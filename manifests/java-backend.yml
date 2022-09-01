@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: devops
   name: todo-app-back-deployment
 spec:
   replicas: 1
@@ -12,26 +13,35 @@ spec:
       labels:
         app: todo-app-back
     spec:
+      containers:
+        - name: todo-app-back
+          image: mikhailzvagelsky/devopswithkubernetes_todo:2.08
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: docker
+            - name: POSTGRES_CREDENTIALS_FOLDER
+              value: "/secrets"
+          volumeMounts:
+            - name: shared-volume  # used to store daily image in it
+              mountPath: /home
+            - name: secret
+              mountPath: "/secrets"
+          ports:
+            - containerPort: 8091
+              name: app-port
       volumes:
         - name: shared-volume
           persistentVolumeClaim:
             claimName: persistent-volume-claim
-      containers:
-        - name: todo-app-back
-          image: mikhailzvagelsky/devopswithkubernetes_todo:2.02
-          env:
-            - name: SPRING_PROFILES_ACTIVE
-              value: docker
-          volumeMounts:
-            - name: shared-volume
-              mountPath: /home
-          ports:
-            - containerPort: 8091
-              name: app-port
+        - name: secret
+          secret:
+            secretName: todo-postgres
+            defaultMode: 0400
 ---
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: devops
   name: todo-back-service
 spec:
   type: ClusterIP
