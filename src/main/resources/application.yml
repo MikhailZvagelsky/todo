@@ -4,3 +4,9 @@ server:
 image:
   file: /Users/mikhail.zvagelsky/kubernetes/devopswithkubernetes/projects/todo/src/main/resources/images/daily_image.jpg
   url: https://picsum.photos/500
+postgres:
+  credentials:
+    folder: ${POSTGRES_CREDENTIALS_FOLDER}
+    passwordFile: password
+    usernameFile: username
+    urlFile: url
