@@ -31,6 +31,12 @@ npm start
 
 Web page http://localhost:3000/
 
+#### Run script to append link to a Wiki page to todo list.
+
+Run the shell [script](src/main/cronJobs/dailyTodo/createTodo.sh) 
+as described in the [README](src/main/cronJobs/dailyTodo/README.md).
+
+
 ### Run in k8s
 
 Run k8s cluster, forwarding host's ports 8081 (frontend endpoint), and 8091 (backend endpoint) to load-balancer port 80.
@@ -71,7 +77,6 @@ kubectl apply -f manifests/postgres.yml
 
 ```
 
-
 Deploy backend:
 
 ```shell
@@ -86,6 +91,16 @@ kubectl apply -f manifests/react-frontend.yml
 Deploy ingress:
 ```shell
 kubectl apply -f manifests/ingress.yml
+```
+
+Run containerised shell script which adds link to a Wiki page to todo list:
+```shell
+kubectl apply -f manifests/todo-job.yml
+```
+
+Deploy a cron job that adds link to a Wiki page to todo list every 5 minutes:
+```shell
+kubectl apply -f manifests/todo-cronjob.yml
 ```
 
 App is available on port 8081: http://localhost:8081/
