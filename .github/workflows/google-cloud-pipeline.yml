@@ -22,56 +22,56 @@ jobs:
       - name: View working folder content.
         run: ls -lah
 
-#      - name: Authenticate in Google Cloud
-#        uses: google-github-actions/auth@v0
-#        with:
-#          credentials_json: ${{ secrets.GKE_SA_KEY }}
-#
-#      - name: Set up Cloud SDK
-#        uses: google-github-actions/setup-gcloud@v0
-#
-#      - name: 'gcloud info:'
-#        run: gcloud info
-#
-#      - name: Configure Docker to use the gcloud command-line tool as a credential helper for authentication
-#        run: gcloud --quiet auth configure-docker
-#
-#      - name: Get the GKE credentials, so we can deploy to the cluster
-#        run: gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
-#
-#      - name: Build the frontend Docker image
-#        run: |-
-#          docker build --tag "gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" src/main/frontend
-#
-#      - name: Publish the frontend Docker image to Google Container Registry
-#        run: |-
-#          docker push "gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
-#
-#      - name: Install JDK 18
-#        uses: actions/setup-java@v3
-#        with:
-#          java-version: 18
-#          distribution: 'temurin'
-#          cache: gradle
-#
-#      - name: Build backend image with Gradle JIB task
-#        run: |-
-#          ./gradlew jib --no-daemon -Djib.to.image="gcr.io/$PROJECT_ID/todo-backend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
-#
-#      - name: Set up Kustomize
-#        uses: imranismail/setup-kustomize@v1
-#
-#      - name: Deploy to the GKE cluster
-#        run: |-
-#          cd manifests/GKE
-#          kubectl apply -f namespace.yml
-#          kustomize edit set image backend-image=gcr.io/$PROJECT_ID/todo-backend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
-#          kustomize edit set image frontend-image=gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
-#          kubectl apply -f secret.yml
-#          kubectl apply -f postgres.yml
-#          echo kustomize build .
-#          kustomize build . | kubectl apply -f -
-#          kubectl rollout status deployment todo-app-back-deployment
-#          kubectl rollout status deployment todo-app-front-deployment
-#          kubectl rollout status statefulset postgres-ss
-#          kubectl get services -o wide
+      - name: Authenticate in Google Cloud
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GKE_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+
+      - name: 'gcloud info:'
+        run: gcloud info
+
+      - name: Configure Docker to use the gcloud command-line tool as a credential helper for authentication
+        run: gcloud --quiet auth configure-docker
+
+      - name: Get the GKE credentials, so we can deploy to the cluster
+        run: gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+
+      - name: Build the frontend Docker image
+        run: |-
+          docker build --tag "gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" src/main/frontend
+
+      - name: Publish the frontend Docker image to Google Container Registry
+        run: |-
+          docker push "gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
+
+      - name: Install JDK 18
+        uses: actions/setup-java@v3
+        with:
+          java-version: 18
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Build backend image with Gradle JIB task
+        run: |-
+          ./gradlew jib --no-daemon -Djib.to.image="gcr.io/$PROJECT_ID/todo-backend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
+
+      - name: Set up Kustomize
+        uses: imranismail/setup-kustomize@v1
+
+      - name: Deploy to the GKE cluster
+        run: |-
+          cd manifests/GKE/
+          kubectl apply -f namespace.yml
+          kustomize edit set image backend-image=gcr.io/$PROJECT_ID/todo-backend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
+          kustomize edit set image frontend-image=gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
+          kubectl apply -f secret.yml
+          kubectl apply -f postgres.yml
+          echo kustomize build
+          kustomize build . | kubectl apply -f -
+          kubectl rollout status deployment todo-app-back-deployment
+          kubectl rollout status deployment todo-app-front-deployment
+          kubectl rollout status statefulset postgres-ss
+          kubectl get services -o wide
