@@ -16,6 +16,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: View working folder content.
+        run: ls -lah
+
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -33,7 +36,7 @@ jobs:
       - name: Configure Docker to use the gcloud command-line tool as a credential helper for authentication
         run: gcloud --quiet auth configure-docker
 
-      - name: Get th e GKE credentials, so we can deploy to the cluster
+      - name: Get the GKE credentials, so we can deploy to the cluster
         run: gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
 
       - name: Build the frontend Docker image
