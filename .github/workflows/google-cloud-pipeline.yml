@@ -69,9 +69,11 @@ jobs:
           kustomize edit set image frontend-image=gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
           kubectl apply -f secret.yml
           kubectl apply -f postgres.yml
-          echo kustomize build
-          kustomize build . | kubectl apply -f -
-          kubectl rollout status deployment todo-app-back-deployment
-          kubectl rollout status deployment todo-app-front-deployment
-          kubectl rollout status statefulset postgres-ss
-          kubectl get services -o wide
+          echo $(kustomize build)
+          kustomize build | kubectl apply -f -
+          kubectl apply -f ingress.yml
+          # todo - do not hardcode namespace "devops"
+          kubectl rollout status deployment todo-app-back-deployment -n devops
+          kubectl rollout status deployment todo-app-front-deployment -n devops
+          kubectl rollout status statefulset postgres-ss -n devops
+          kubectl get services -o wide -n devops
