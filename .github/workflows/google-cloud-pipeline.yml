@@ -26,21 +26,38 @@ jobs:
           service_account_key: ${{ secrets.GKE_SA_KEY }}
           export_default_credentials: true
 
-      # Configure Docker to use the gcloud command-line tool as a credential
-      # helper for authentication
-      - run: |-
-          gcloud --quiet auth configure-docker
-      # Get the GKE credentials, so we can deploy to the cluster
-      - run: |-
-          gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
-      # Build the Docker image
-      - name: Build
+      - name: Configure Docker to use the gcloud command-line tool as a credential helper for authentication
+        run: gcloud --quiet auth configure-docker
+
+      - name: Get th e GKE credentials, so we can deploy to the cluster
+      - run: gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
+
+      - name: Build the frontend Docker image
         run: |-
           docker build --tag "gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" src/main/frontend
-      # Push the Docker image to Google Container Registry
-      - name: Publish
+
+      - name: Publish the frontend Docker image to Google Container Registry
         run: |-
           docker push "gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
+
+      - name: Install JDK 18
+        uses: actions/setup-java@v3
+        with:
+          java-version: 18
+          distribution: 'temurin'
+
+      - name: Build backend image with Gradle JIB task
+        run: |-
+          ./gradlew jib -Dimage="gcr.io/$PROJECT_ID/todo-backend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
+
+
+
+
+
+
+
+
+
 
       # Set up kustomize
 #      - name: Set up Kustomize
