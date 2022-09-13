@@ -10,16 +10,12 @@ class TodoComponent extends React.Component {
         }
         this.submitNewTodo = this.submitNewTodo.bind(this);
         this.fetchTodoList = this.fetchTodoList.bind(this);
-        this.backendUrl = getBackendUrl() + "/todos";
     }
 
     fetchTodoList() {
         axios
-            .get(this.backendUrl)
+            .get("/todos")
             .then(res => {
-                console.log("Backend URL: " + this.backendUrl);
-                console.log("Fetched todo:");
-                console.log(res.data);
                 this.setState({todoList: res.data});
             })
             .catch(err => {
@@ -29,10 +25,9 @@ class TodoComponent extends React.Component {
 
     submitNewTodo(newTodo) {
         axios
-            .post(this.backendUrl, {text: newTodo})
+            .post("/todos", {text: newTodo})
             .then(() => {
                 this.fetchTodoList();
-                console.log(`Todo "${newTodo}" posted.`);
             })
             .catch(err => {
                 console.log(`Post new todo error: ${err}`);
@@ -100,17 +95,10 @@ class TodoList extends React.Component {
     }
 }
 
-function getBackendUrl() {
-    return process.env.NODE_ENV === 'production'
-        ? process.env.REACT_APP_PRODUCTION_BACKEND_URL
-        : process.env.REACT_APP_DEV_BACKEND_URL;
-}
-
 function App() {
-    const url = getBackendUrl() + "/daily_image";
     return (
         <div className="App">
-            <img src={url} alt="Daily Image" width="400" height="400" />
+            <img src={"/daily_image"} alt="Daily Image" width="400" height="400" />
             <TodoComponent />
         </div>
     );
