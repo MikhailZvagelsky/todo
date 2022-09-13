@@ -6,6 +6,6 @@ jib {
     to {
         tags = ['2.10']
         image = 'registry.hub.docker.com/mikhailzvagelsky/devopswithkubernetes_todo'
-        credHelper = 'osxkeychain'
+//        credHelper = 'osxkeychain'
     }
 }
