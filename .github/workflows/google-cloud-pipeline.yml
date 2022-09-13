@@ -30,13 +30,6 @@ jobs:
       - name: 'gcloud info:'
         run: gcloud info
 
-#      - name: Set up Cloud SDK
-#        uses: google-github-actions/setup-gcloud@v0
-#        with:
-#          project_id: ${{ secrets.GKE_PROJECT }}
-#          service_account_key: ${{ secrets.GKE_SA_KEY }}
-#          export_default_credentials: true
-
       - name: Configure Docker to use the gcloud command-line tool as a credential helper for authentication
         run: gcloud --quiet auth configure-docker
 
@@ -56,28 +49,26 @@ jobs:
         with:
           java-version: 18
           distribution: 'temurin'
+          cache: gradle
 
       - name: Build backend image with Gradle JIB task
         run: |-
-          ./gradlew jib -Djib.to.image="gcr.io/$PROJECT_ID/todo-backend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
+          ./gradlew jib --no-daemon -Djib.to.image="gcr.io/$PROJECT_ID/todo-backend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
 
+      - name: Set up Kustomize
+        uses: imranismail/setup-kustomize@v1
 
-
-
-
-
-
-
-
-
-      # Set up kustomize
-#      - name: Set up Kustomize
-#        uses: imranismail/setup-kustomize@v1
-
-      # Deploy the Docker image to the GKE cluster
-#      - name: Deploy
-#        run: |-
-#          kustomize edit set image gcr.io/PROJECT_ID/IMAGE=gcr.io/$PROJECT_ID/$IMAGE:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
-#          kustomize build . | kubectl apply -f -
-#          kubectl rollout status deployment $IMAGE
-#          kubectl get services -o wide
+      - name: Deploy to the GKE cluster
+        run: |-
+          cd manifests/GKE
+          kubectl apply -f namespace.yml
+          kustomize edit set image backend-image=gcr.io/$PROJECT_ID/todo-backend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
+          kustomize edit set image frontend-image=gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
+          kubectl apply -f secret.yml 
+          kubectl apply -f postgres.yml
+          echo kustomize build .
+          kustomize build . | kubectl apply -f -
+          kubectl rollout status deployment todo-app-back-deployment
+          kubectl rollout status deployment todo-app-front-deployment
+          kubectl rollout status statefulset postgres-ss
+          kubectl get services -o wide
