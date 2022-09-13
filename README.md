@@ -1,4 +1,4 @@
-[![Build and deploy to GKE](https://github.com/MikhailZvagelsky/todo/actions/workflows/google-cloud-pipeline.yml/badge.svg)](https://github.com/MikhailZvagelsky/todo/actions/workflows/google-cloud-pipeline.yml)
+[![CI/CD GKE](https://github.com/MikhailZvagelsky/todo/actions/workflows/google-cloud-pipeline.yml/badge.svg)](https://github.com/MikhailZvagelsky/todo/actions/workflows/google-cloud-pipeline.yml)
 
 
 ### Run in Idea.
