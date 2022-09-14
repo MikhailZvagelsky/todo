@@ -46,7 +46,7 @@ Check that the [.env](src/main/frontend/.env) file contains the correct backend 
 (http://localhost:8091) it will be used by React app to send browser requests to the backend.
 
 ```shell
-cd frontend
+cd src/frontend
 npm start
 ```
 
@@ -64,7 +64,7 @@ and run the [script](src/main/cronJobs/dailyTodo/createTodo.sh)
  ./createTodo.sh
 ```
 
-### Kubernetes Secret manifest management
+### 2. Kubernetes Secret manifest management
 
 Do not commit actual secret.yml to VCS.
 
@@ -77,7 +77,7 @@ Encrypt secret.yml, only username and password are actually encrypted,
 use public key for that:
 :
 ```shell
-sops --encrypt --age age1ssqylrszr8sj6ys8glqhrr7w0zkdve80kyndcsuhu3qsx3zywaxsxph2z0 --encrypted-regex '^(username|password)$' secret.yml > secret.enc.yml
+sops --encrypt --age age1ssqylrszr8sj6ys8glqhrr7w0zkdve80kyndcsuhu3qsx3zywaxsxph2z0 --encrypted-regex '^(username|password)$' manifests/k3s/secret.yml > manifests/k3s/secret.enc.yml
 ```
 
 To decrypt, story a private key as an environment variable:
@@ -86,10 +86,10 @@ export SOPS_AGE_KEY=AGE-SECRET-KEY-...
 ```
 and decrypt:
 ```shell
-sops --decrypt secret.enc.yml > secret.decrypted.yml
+sops --decrypt manifests/k3s/secret.enc.yml > manifests/k3s/secret.decrypted.yml
 ```
 
-### Run in k3s Kubernetes cluster
+### 3. Run in local k3s Kubernetes cluster
 
 Run k8s cluster, forwarding host's ports 8081 (frontend endpoint), and 8091 (backend endpoint) to load-balancer port 80.
 
@@ -117,12 +117,12 @@ Deploy persistent volume and persistent volume claim:
 kubectl apply -f manifests/k3s/volume/
 ```
 
-Create secret as described in the [secret management](#kubernetes-secret-manifest-management) section:
+Create secret as described in the [secret management](#2-kubernetes-secret-manifest-management) section:
 ```shell
 export SOPS_AGE_KEY=AGE-SECRET-KEY-...
 ```
 ```shell
-sops --decrypt secret.enc.yaml | kubectl apply -f -
+sops --decrypt manifests/k3s/secret.enc.yml | kubectl apply -f -
 ```
 
 Deploy postgres:
@@ -158,8 +158,8 @@ kubectl apply -f manifests/k3s/todo-cronjob.yml
 ```
 
 App is available on port 8081: http://localhost:8081/
-You also can send requests to the backend directly http://localhost:8081/todos , http://localhost:8081/daily_image 
+You also can send requests to the backend directly http://localhost:8081/todos , http://localhost:8081/daily_image
 
-### Deploy in Google Kubernetes Engine
+### 4. Deploy in Google Kubernetes Engine
 
 Deploy [manifests](manifests/GKE), do not forget to decrypt the secret.yml.

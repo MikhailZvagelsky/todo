@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: todo-app-front
-          image: mikhailzvagelsky/todo-app-react:2.02.v2
+          image: mikhailzvagelsky/todo-app-react:3.04
           ports:
             - containerPort: 3000
               name: app-port

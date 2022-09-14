@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
         - name: todo-app-back
-          image: mikhailzvagelsky/devopswithkubernetes_todo:2.10
+          image: mikhailzvagelsky/devopswithkubernetes_todo:3.04
+          imagePullPolicy: Always
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: docker

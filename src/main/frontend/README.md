@@ -23,7 +23,7 @@ docker image push mikhailzvagelsky/todo-app-react:3.04
 
 Run the image in detached mode
 ```shell
-docker container run --name tado-app-react-frontend --rm -p 3000:3000 -d todo-app-react:2.02
+docker container run --name tado-app-react-frontend --rm -p 3000:3000 -d todo-app-react:3.04
 ```
 
 # Getting Started with Create React App

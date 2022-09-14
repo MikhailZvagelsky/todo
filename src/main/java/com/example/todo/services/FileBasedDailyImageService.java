@@ -1,17 +1,17 @@
 package com.example.todo.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+@Slf4j
 @Service
 public class FileBasedDailyImageService implements DailyImageService {
 
@@ -27,8 +27,10 @@ public class FileBasedDailyImageService implements DailyImageService {
 
     @Override
     public InputStream getDailyImage() throws FileNotFoundException {
-        if (!imageFile.exists() || !isCurrentDayImage(imageFile)) {
+        if (!imageFile.exists() || !isCurrentDayImage(imageFile) || isEmptyOrFailedToFind(imageFile)) {
             imageProvider.loadImage(imageFile);
+        } else {
+            log.info("Load image from file.");
         }
         return new FileInputStream(imageFile);
     }
@@ -40,5 +42,15 @@ public class FileBasedDailyImageService implements DailyImageService {
         LocalDate imageDate = imageDateTime.toLocalDate();
         LocalDate currentDate = LocalDate.now();
         return currentDate.equals(imageDate);
+    }
+
+    private boolean isEmptyOrFailedToFind(File imageFile) {
+        try {
+            return Files.size(imageFile.toPath()) == 0;
+        } catch (IOException ex) {
+            log.error("Failed to determine image file size.");
+            log.error(ex.getMessage());
+            return true;
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.todo.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Path;
 
+@Slf4j
 @Service
 public class DailyImageLoader implements DailyImageProvider {
 
@@ -30,6 +32,9 @@ public class DailyImageLoader implements DailyImageProvider {
 
         responseHandler = HttpResponse.BodyHandlers.ofFile(Path.of(imageFile));
 
+        log.info("Image url: " + imageUrl);
+        log.info("Image file: " + imageFile);
+
         httpClient = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.ALWAYS)
                 .build();
@@ -38,10 +43,11 @@ public class DailyImageLoader implements DailyImageProvider {
     @Override
     public void loadImage(File imageFile) {
         try {
+            log.info("Try to load image through network.");
             httpClient.send(request, responseHandler);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
+            log.error("Failed to download image with client.");
+            log.error(httpClient.toString());
             throw new RuntimeException(e);
         }
     }
