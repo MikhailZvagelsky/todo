@@ -2,7 +2,7 @@
 
 Build the Docker image for the current folder and tag it
 ```shell
-docker image build . -t todo-app-react:3.03
+docker image build . -t todo-app-react:3.04
 ```
 
 Check the image was created
@@ -14,11 +14,11 @@ Tag an image and put it into repository.
 Increment image tag (vXXX) if an image with given tag already exists. That allows kubernetes to pull new image instead of using cached one.
 And change image tag used in deployment accordingly.
 ```shell
-docker image tag todo-app-react:3.03 mikhailzvagelsky/todo-app-react:3.03
+docker image tag todo-app-react:3.04 mikhailzvagelsky/todo-app-react:3.04
 ```
 
 ```shell
-docker image push mikhailzvagelsky/todo-app-react:3.03
+docker image push mikhailzvagelsky/todo-app-react:3.04
 ```
 
 Run the image in detached mode

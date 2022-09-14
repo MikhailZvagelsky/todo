@@ -1,30 +1,49 @@
 [![CI/CD GKE](https://github.com/MikhailZvagelsky/todo/actions/workflows/google-cloud-pipeline.yml/badge.svg)](https://github.com/MikhailZvagelsky/todo/actions/workflows/google-cloud-pipeline.yml)
 
-### Run in Idea.
+### 1. Run in development (local) mode
 
 #### Postgres settings
 
-The application stores data in Postgres.
-An invironment variable specified in the `local.env` file in the root folder,
-points to a folder where postgres credentials are stored.
+The application uses Postgres, and reads postgres url, username and password
+from files with same names in folder specified in 
+the `POSTGRES_CREDENTIALS_FOLDER` environment variable. 
 
-Run a Postgres server on URL specified in the configuration, and create
-required database, a user account, and privileges for the user.
+For local development the `POSTGRES_CREDENTIALS_FOLDER` variable
+is defined in the [local.env](local/local.env) 
+file alongside with the corresponding [folder](local/secrets).
 
+1. Run a Postgres server on URL specified in the [url](local/secrets/url) file.
+   Run following commands in a psql console.
+
+2. Create database specified in the url, used to store application data. 
 ```shell
-create database ${POSTGRES_DB};
-create user ${POSTGRES_USERNAME} with encrypted password '${POSTGRES_PASSWORD}';
-grant all privileges on database ${POSTGRES_DB} to ${POSTGRES_USERNAME};
+create database "todo";
+```
+
+3. Create user account as specified in the [username](local/secrets/username),
+and the [password](local/secrets/password) files.
+```shell
+create user "localtodouser" with encrypted password 'localTodoPassword';
+```
+
+4. Grant privileges for the user.
+```shell
+grant all privileges on database "todo" to "localtodouser";
 ```
 
 #### Run backend
 
-Run main application class `TodoApplication`.
-Application expects environment variable as specified in the `local.env` file in the root folder.
+Application expects that environment variable `POSTGRES_CREDENTIALS_FOLDER`
+points to a folder with correct postgres credentials.
+
+Run main application class [TodoApplication](src/main/java/com/example/todo/TodoApplication.java).
 
 App is listening on port 8091: http://localhost:8091/todos, http://localhost:8091/daily_image
 
 #### Run frontend
+
+Check that the [.env](src/main/frontend/.env) file contains the correct backend url
+(http://localhost:8091) it will be used by React app to send browser requests to the backend.
 
 ```shell
 cd frontend
@@ -35,8 +54,15 @@ Web page http://localhost:3000/
 
 #### Run script to append link to a Wiki page to todo list.
 
-Run the shell [script](src/main/cronJobs/dailyTodo/createTodo.sh) 
-as described in the [README](src/main/cronJobs/dailyTodo/README.md).
+Go to the [cronJobs](src/main/cronJobs) folder.
+Set url for fetching toto list:
+```shell
+export BACKEND_URL=http://localhost:8091/todos
+```
+and run the [script](src/main/cronJobs/dailyTodo/createTodo.sh)
+```shell
+ ./createTodo.sh
+```
 
 ### Kubernetes Secret manifest management
 

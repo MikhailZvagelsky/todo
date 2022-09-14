@@ -13,5 +13,5 @@ docker image push mikhailzvagelsky/todo_script:v1
 
 Run container
 ```shell
-docker container run --name script --rm -e "BACKEND_URL=http://localhost:8081/todos" mikhailzvagelsky/todo_script:v1
+docker container run --name script --rm -e "BACKEND_URL=http://localhost:8091/todos" mikhailzvagelsky/todo_script:v1
 ```

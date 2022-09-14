@@ -25,7 +25,7 @@ public class PostgresConfig {
         String password = read(folder, passwordFile);
         String username = read(folder, usernameFile);
         String url = read(folder, urlFile);
-        log.info("Secrets: " + password + ", " + username + ", " + url);
+        log.info("Look Postgres at url: " + url);
         return dataSource(url, username, password);
     }
 

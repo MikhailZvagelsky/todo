@@ -17,12 +17,10 @@ public class Notifier implements ApplicationRunner {
     private final Environment environment;
     @Value("${server.port}")
     private int serverPort;
-    private final String PORT_ENV_VARIABLE_NAME = "PORT";
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        String port = environment.getProperty(PORT_ENV_VARIABLE_NAME);
-        System.out.println("Server started in port (get from environment object): " + port);
-        System.out.println("Server started in port (get from application properties): " + serverPort);
+        System.out.println("Port application property: " + serverPort);
+        System.out.println("Read postgres credentials from folder: " + environment.getProperty("POSTGRES_CREDENTIALS_FOLDER"));
     }
 }
