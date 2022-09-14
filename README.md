@@ -1,6 +1,5 @@
 [![CI/CD GKE](https://github.com/MikhailZvagelsky/todo/actions/workflows/google-cloud-pipeline.yml/badge.svg)](https://github.com/MikhailZvagelsky/todo/actions/workflows/google-cloud-pipeline.yml)
 
-
 ### Run in Idea.
 
 #### Postgres settings
@@ -39,6 +38,30 @@ Web page http://localhost:3000/
 Run the shell [script](src/main/cronJobs/dailyTodo/createTodo.sh) 
 as described in the [README](src/main/cronJobs/dailyTodo/README.md).
 
+### Kubernetes Secret manifest management
+
+Do not commit actual secret.yml to VCS.
+
+Encrypt secret with the SOPS tool, and the 'age' encryptor.
+Generate private/public key pair at first, and store it in a file:
+```shell
+age-keygen -o key.txt
+```
+Encrypt secret.yml, only username and password are actually encrypted,
+use public key for that:
+:
+```shell
+sops --encrypt --age age1ssqylrszr8sj6ys8glqhrr7w0zkdve80kyndcsuhu3qsx3zywaxsxph2z0 --encrypted-regex '^(username|password)$' secret.yml > secret.enc.yml
+```
+
+To decrypt, story a private key as an environment variable:
+```shell
+export SOPS_AGE_KEY=AGE-SECRET-KEY-...
+```
+and decrypt:
+```shell
+sops --decrypt secret.enc.yml > secret.decrypted.yml
+```
 
 ### Run in k3s Kubernetes cluster
 
@@ -68,9 +91,12 @@ Deploy persistent volume and persistent volume claim:
 kubectl apply -f manifests/k3s/volume/
 ```
 
-Create secret:
+Create secret as described in the [secret management](#kubernetes-secret-manifest-management) section:
 ```shell
-kubectl apply -f manifests/k3s/secret.yml
+export SOPS_AGE_KEY=AGE-SECRET-KEY-...
+```
+```shell
+sops --decrypt secret.enc.yaml | kubectl apply -f -
 ```
 
 Deploy postgres:
@@ -110,4 +136,4 @@ You also can send requests to the backend directly http://localhost:8081/todos ,
 
 ### Deploy in Google Kubernetes Engine
 
-Deploy [manifests](manifests/GKE).
+Deploy [manifests](manifests/GKE), do not forget to decrypt the secret.yml.

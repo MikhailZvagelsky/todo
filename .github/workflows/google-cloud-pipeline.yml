@@ -61,15 +61,23 @@ jobs:
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v1
 
+      - name: Install SOPS editor of encrypted files
+        run: |-
+          curl -O -L -C - https://github.com/mozilla/sops/releases/download/v3.7.3/sops-v3.7.3.linux
+          sudo mv sops-v3.7.3.linux /usr/bin/sops
+          sudo chmod +x /usr/bin/sops
+
       - name: Deploy to the GKE cluster
         run: |-
           cd manifests/GKE/
           kubectl apply -f namespace.yml
+          export SOPS_AGE_KEY=${{ secrets.SOPS_AGE_PRIVATE_KEY_FOR_SECRET_MANIFEST }}
+          sops --decrypt secret.enc.yaml | kubectl apply -f -
+          kubectl apply -f postgres.yml
           kustomize edit set image backend-image=gcr.io/$PROJECT_ID/todo-backend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
           kustomize edit set image frontend-image=gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
-          kubectl apply -f secret.yml
-          kubectl apply -f postgres.yml
-          echo $(kustomize build)
+          echo 'Kustomize build output: '
+          kustomize build
           kustomize build | kubectl apply -f -
           kubectl apply -f ingress.yml
           # todo - do not hardcode namespace "devops"
