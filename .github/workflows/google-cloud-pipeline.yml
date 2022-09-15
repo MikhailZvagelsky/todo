@@ -13,6 +13,9 @@ jobs:
     name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
 
+    env:
+      FRONTEND_IMAGE: gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -39,7 +42,7 @@ jobs:
 
       - name: Build the frontend Docker image
         run: |-
-          docker build --tag "gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" src/main/frontend
+          docker build --tag "$FRONTEND_IMAGE" src/main/frontend
 
       - name: Publish the frontend Docker image to Google Container Registry
         run: |-
@@ -65,36 +68,59 @@ jobs:
           sudo mv sops-v3.7.3.linux /usr/bin/sops
           sudo chmod +x /usr/bin/sops
 
+      - name: Install kubectl argo rollouts plugin
+        run: |-
+          curl -LO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
+          chmod +x ./kubectl-argo-rollouts-linux-amd64
+          sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
+
       - name: Deploy to the GKE cluster
         run: |-
           echo "go to manifests folder"
           cd manifests/GKE/
+          
           echo "create namespace"
           kubectl apply -f namespace.yml
+          
           echo "export private key"
           export SOPS_AGE_KEY=${{ secrets.SOPS_AGE_PRIVATE_KEY_FOR_SECRET_MANIFEST }}
+          
           echo "decrypt  and apply secret"
           sops --decrypt secret.enc.yml | kubectl apply -f -
+          
           echo "launch postgres"
           kubectl apply -f postgres.yml
+          
           echo "set backend image name"
           kustomize edit set image backend-image=gcr.io/$PROJECT_ID/todo-backend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
+          
           echo "set frontend image name"
           kustomize edit set image frontend-image=gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
+          
           echo 'Kustomize build output: '
           kustomize build
+          
           echo "deploy kustomized frontend and backend"
           kustomize build | kubectl apply -f -
+          
           echo "deploy ingress"
           kubectl apply -f ingress.yml
+          
           echo "start cronjob generating todos"
           kubectl apply -f todo-cronjob.yml
+          
           # todo - do not hardcode namespace "devops"
           echo "wait for success postgres deployment"
           kubectl rollout status statefulset postgres-ss -n devops
+          
           echo "wait for success backend deployment"
           kubectl rollout status deployment todo-app-back-deployment -n devops
+          
+          echo "monitor rollout with argo"
+          kubectl-argo-rollouts status todo-app-back-deployment -n devops
+          
           echo "wait for success frontend deployment"
           kubectl rollout status deployment todo-app-front-deployment -n devops
+          
           echo "view deployed services"
           kubectl get services -o wide -n devops
