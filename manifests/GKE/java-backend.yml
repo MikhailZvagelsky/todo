@@ -57,7 +57,7 @@ spec:
     spec:
       containers:
         - name: todo-app-back
-          image: backend-image # specify it withkustomize
+          image: backend-image # specify it with kustomize
           imagePullPolicy: Always
           ports:
             - containerPort: 8091
@@ -86,8 +86,9 @@ spec:
               mountPath: "/secrets"
       volumes:
         - name: shared-volume
-          persistentVolumeClaim:
-            claimName: todo-image-storage-clm
+          emptyDir: {}
+#          persistentVolumeClaim:
+#            claimName: todo-image-storage-clm
         - name: secret
           secret:
             secretName: todo-postgres
