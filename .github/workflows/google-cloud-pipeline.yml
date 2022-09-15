@@ -13,9 +13,6 @@ jobs:
     name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
 
-    env:
-      FRONTEND_IMAGE: gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -42,7 +39,7 @@ jobs:
 
       - name: Build the frontend Docker image
         run: |-
-          docker build --tag "$FRONTEND_IMAGE" src/main/frontend
+          docker build --tag "gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" src/main/frontend
 
       - name: Publish the frontend Docker image to Google Container Registry
         run: |-
