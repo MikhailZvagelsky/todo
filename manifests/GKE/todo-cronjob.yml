@@ -4,7 +4,7 @@ metadata:
   namespace: devops
   name: todo-cronjob
 spec:
-  schedule: "*/5 * * * *"
+  schedule: "*/3 * * * *"
   jobTemplate:
     spec:
       template:

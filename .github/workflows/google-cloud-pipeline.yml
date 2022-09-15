@@ -87,6 +87,8 @@ jobs:
           kustomize build | kubectl apply -f -
           echo "deploy ingress"
           kubectl apply -f ingress.yml
+          echo "start cronjob generating todos"
+          kubectl apply -f todo-cronjob.yml
           # todo - do not hardcode namespace "devops"
           echo "wait for success postgres deployment"
           kubectl rollout status statefulset postgres-ss -n devops

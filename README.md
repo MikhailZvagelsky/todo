@@ -46,7 +46,7 @@ Check that the [.env](src/main/frontend/.env) file contains the correct backend 
 (http://localhost:8091) it will be used by React app to send browser requests to the backend.
 
 ```shell
-cd src/frontend
+cd src/main/frontend
 npm start
 ```
 
@@ -54,14 +54,15 @@ Web page http://localhost:3000/
 
 #### Run script to append link to a Wiki page to todo list.
 
-Go to the [cronJobs](src/main/cronJobs) folder.
 Set url for fetching toto list:
 ```shell
 export BACKEND_URL=http://localhost:8091/todos
 ```
+
+Go to the [cronJobs](src/main/cronJobs) folder.
 and run the [script](src/main/cronJobs/dailyTodo/createTodo.sh)
 ```shell
- ./createTodo.sh
+ ./src/main/cronJobs/dailyTodo/createTodo.sh
 ```
 
 ### 2. Kubernetes Secret manifest management
