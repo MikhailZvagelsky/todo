@@ -57,7 +57,7 @@ spec:
     spec:
       containers:
         - name: todo-app-back
-          image: backend-image
+          image: backend-image # specify it withkustomize
           imagePullPolicy: Always
           ports:
             - containerPort: 8091
