@@ -65,12 +65,6 @@ jobs:
           sudo mv sops-v3.7.3.linux /usr/bin/sops
           sudo chmod +x /usr/bin/sops
 
-#      - name: Install kubectl argo rollouts plugin
-#        run: |-
-#          curl -LO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
-#          chmod +x ./kubectl-argo-rollouts-linux-amd64
-#          sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
-#
       - name: Deploy to the GKE cluster
         run: |-
           echo "go to manifests folder"
@@ -112,9 +106,6 @@ jobs:
           
           echo "wait for success backend deployment"
           kubectl rollout status deployment todo-app-back-deployment -n devops
-          
-#          echo "monitor rollout with argo"
-#          kubectl-argo-rollouts status todo-app-back-deployment -n devops
           
           echo "wait for success frontend deployment"
           kubectl rollout status deployment todo-app-front-deployment -n devops
