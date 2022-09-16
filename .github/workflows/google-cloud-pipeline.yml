@@ -2,9 +2,8 @@ name: Build and deploy to GKE
 
 on:
   push:
-#    # do not run on tag push
-#    tags-ignore:
-#      - '**'
+    tags-ignore:
+      - '**'
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
