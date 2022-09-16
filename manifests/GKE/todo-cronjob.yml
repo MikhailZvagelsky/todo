@@ -1,7 +1,6 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  namespace: devops
   name: todo-cronjob
 spec:
   schedule: "*/3 * * * *"

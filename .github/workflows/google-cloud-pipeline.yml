@@ -42,7 +42,7 @@ jobs:
 
       - name: Build the frontend Docker image
         run: |-
-          docker build --tag "gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA" src/main/frontend
+          docker build --tag "gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF_NAME}-$GITHUB_SHA" src/main/frontend
 
       - name: Publish the frontend Docker image to Google Container Registry
         run: |-
@@ -57,7 +57,7 @@ jobs:
 
       - name: Build backend image with Gradle JIB task
         run: |-
-          ./gradlew jib --no-daemon -Djib.to.image="gcr.io/$PROJECT_ID/todo-backend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA"
+          ./gradlew jib --no-daemon -Djib.to.image="gcr.io/$PROJECT_ID/todo-backend:${GITHUB_REF_NAME}-$GITHUB_SHA"
 
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v1
@@ -74,44 +74,47 @@ jobs:
           cd manifests/GKE/
           
           echo "create namespace"
-          kubectl apply -f namespace.yml
+          kubectl create namespace ${GITHUB_REF_NAME} || true
+          
+          echo "set namespace to kubectl context"
+          kubectl config set-context --current --namespace=$GITHUB_REF_NAME
+          
+          echo "set namespace in kustomize.yml"
+          kustomize edit set namespace ${GITHUB_REF_NAME}
+          
+          echo "set backend image name in kustomize.yml"
+          kustomize edit set image backend-image=gcr.io/$PROJECT_ID/todo-backend:${GITHUB_REF_NAME}-$GITHUB_SHA
+          
+          echo "set frontend image name in kustomize.yml"
+          kustomize edit set image frontend-image=gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF_NAME}-$GITHUB_SHA
+          
+          echo "kustomization.yml: "
+          cat kustomization.yml
           
           echo "export private key"
           export SOPS_AGE_KEY=${{ secrets.SOPS_AGE_PRIVATE_KEY_FOR_SECRET_MANIFEST }}
           
-          echo "decrypt  and apply secret"
-          sops --decrypt secret.enc.yml | kubectl apply -f -
+          echo "decrypt secrete and store in a file"
+          sops --decrypt secret.enc.yml > secret.yml
           
-          echo "launch postgres"
-          kubectl apply -f postgres.yml
-          
-          echo "set backend image name"
-          kustomize edit set image backend-image=gcr.io/$PROJECT_ID/todo-backend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
-          
-          echo "set frontend image name"
-          kustomize edit set image frontend-image=gcr.io/$PROJECT_ID/todo-frontend:${GITHUB_REF#refs/heads/}-$GITHUB_SHA
-          
-          echo 'Kustomize build output: '
+          echo "vew decrypted secret"
+          cat secret.yml
+
+          echo "Kustomize build output: "
           kustomize build
           
-          echo "deploy kustomized frontend and backend"
+          echo "deploy"
           kustomize build | kubectl apply -f -
-          
-          echo "deploy ingress"
-          kubectl apply -f ingress.yml
-          
-          echo "start cronjob generating todos"
-          kubectl apply -f todo-cronjob.yml
           
           # todo - do not hardcode namespace "devops"
           echo "wait for success postgres deployment"
-          kubectl rollout status statefulset postgres-ss -n devops
+          kubectl rollout status statefulset postgres-ss -n $GITHUB_REF_NAME
           
           echo "wait for success backend deployment"
-          kubectl rollout status deployment todo-app-back-deployment -n devops
+          kubectl rollout status deployment todo-app-back-deployment -n $GITHUB_REF_NAME
           
           echo "wait for success frontend deployment"
-          kubectl rollout status deployment todo-app-front-deployment -n devops
+          kubectl rollout status deployment todo-app-front-deployment -n $GITHUB_REF_NAME
           
           echo "view deployed services"
-          kubectl get services -o wide -n devops
+          kubectl get services -o wide -n $GITHUB_REF_NAME

@@ -87,7 +87,7 @@ export SOPS_AGE_KEY=AGE-SECRET-KEY-...
 ```
 and decrypt:
 ```shell
-sops --decrypt manifests/k3s/secret.enc.yml > manifests/k3s/secret.decrypted.yml
+sops --decrypt manifests/k3s/secret.enc.yml > manifests/k3s/secret.yml
 ```
 
 ### 3. Run in local k3s Kubernetes cluster
